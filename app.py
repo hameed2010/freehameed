@@ -58,6 +58,8 @@ if not db.get('force'):
     db.set('force', [])
 if not db.get('subscription'):
     db.set('subscription', [])    
+if not db.get('token_table'):
+    db.set('token_table', [])   
 def force(channel, userid):
     try:
         x = bot.get_chat_member(channel, userid)
@@ -225,7 +227,7 @@ def handle_message(message):
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)  # حساب اليوم التالي
     formatted_date = tomorrow.strftime("%d/%m/%Y")
-    if not user_messages:
+    if  user_messages:
         
         user_messages = {}
         messages_today = user_messages.get(str(today), 0)
