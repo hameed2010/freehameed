@@ -256,7 +256,7 @@ def handle_message(message):
     id=extract_freepik_id(message.text)
     print(id)
     if id==None:
-        bot.reply_to(message, messages['download_limit_message'])
+        bot.reply_to(message, messages['invalid_link_message'])
         return
     if download_resource(id, message, user_id):
         user_messages[str(today)] = messages_today + 1
