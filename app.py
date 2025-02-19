@@ -22,13 +22,17 @@ except:
     import requests 
    
     pass
+
+
+from keep_alive import keep_alive
+keep_alive()
 db = uu('dbs/hameeed.ss', 'rshq')\
 
 print(db)
 
 
-bot = TeleBot(token="7326958688:AAG__Ylc-gihaeM7UX4o1gVkXXbRGe4F9Ho")
-MAX_MESSAGES_PER_DAY = 100
+bot = TeleBot(token="7536129194:AAH7xiyzsadwEKvNXskin3Oo1Yjycq4JNNA")
+MAX_MESSAGES_PER_DAY = 10
 admin = 6698161283 
 bk = mk(row_width=1).add(btn('رجوع', callback_data='back'))
 with open('messages.json', 'r', encoding='utf-8') as f:
@@ -54,6 +58,8 @@ if not db.get('force'):
     db.set('force', [])
 if not db.get('subscription'):
     db.set('subscription', [])    
+if not db.get('token_table'):
+    db.set('token_table', [])   
 def force(channel, userid):
     try:
         x = bot.get_chat_member(channel, userid)
@@ -226,15 +232,15 @@ def handle_message(message):
         user_messages = {}
     messages_today = user_messages.get(str(today), 0)
     if messages_today >= 1:
-            bot.send_message(
-        message.chat.id,
+        bot.reply_to(
+        message,
         f"🚫 نعتذر، لقد تم منعك من الإرسال حتى {formatted_date} الساعة 13:31. "
         "يتطلب الاشتراك لإكمال طلب الملفات الإضافية.\n\n"
         "للاشتراك، يمكنك التحدث مع أحد المشرفين أو الضغط <a href='https://t.me/freepikprem1'>هنا</a>.\n\n"
         "شكرًا لتفهمك!",
         parse_mode="HTML"
     )
-            message_text = """
+        message_text = """
     👤 باسم: عصماء علي
 
     💳 الحسابات المتاحة:
@@ -245,36 +251,23 @@ def handle_message(message):
     📤 بعد الإيداع:
     قم بإرسال صورة الإيداع إلى ⇇ @eitabbbb
     """
-
-            bot.send_message(message.chat.id, message_text, parse_mode="HTML")
-
-            return 
+        bot.reply_to(message, message_text, parse_mode="HTML")
+        return
     id=extract_freepik_id(message.text)
     print(id)
     if id==None:
-            
-                
-            print(id)
-            bot.reply_to(message, "🚫 الرابط غلط")
-            return
-        
-        # طباعة الرابط
-    try:
-
-        if download_resource(id, message, user_id):
-            user_messages[str(today)] = messages_today + 1
-            db.set(f"{user_id}_messages", user_messages)
-            bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, 1 - messages_today - 1)}) لهذا اليوم.")
-            return
-        else:
-            bot.reply_to(message, messages['registration_success_message'])
-            
-            
-
-
-            return
-    except requests.exceptions.RequestException as e:
+        bot.reply_to(message, messages['download_limit_message'])
+        return
+    if download_resource(id, message, user_id):
+        user_messages[str(today)] = messages_today + 1
+        db.set(f"{user_id}_messages", user_messages)
+        bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, 1 - messages_today - 1)}) لهذا اليوم.")
+        return
+    else:
         bot.reply_to(message, messages['registration_success_message'])
+        return
+
+                
     
 def download_resource(resource_id, message_id, user_id):
     token_data = db.get('token_table')
