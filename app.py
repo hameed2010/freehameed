@@ -230,8 +230,8 @@ def handle_message(message):
         user_messages = {}
         messages_today = user_messages.get(str(today), 0)
         if messages_today >= 1:
-            bot.send_message(
-        message.chat.id,
+            bot.reply_to(
+        message,
         f"🚫 نعتذر، لقد تم منعك من الإرسال حتى {formatted_date} الساعة 13:31. "
         "يتطلب الاشتراك لإكمال طلب الملفات الإضافية.\n\n"
         "للاشتراك، يمكنك التحدث مع أحد المشرفين أو الضغط <a href='https://t.me/freepikprem1'>هنا</a>.\n\n"
@@ -249,7 +249,7 @@ def handle_message(message):
     📤 بعد الإيداع:
     قم بإرسال صورة الإيداع إلى ⇇ @eitabbbb
     """
-            bot.send_message(message.chat.id, message_text, parse_mode="HTML")
+            bot.reply_to(message, message_text, parse_mode="HTML")
             return
         id=extract_freepik_id(message.text)
         print(id)
