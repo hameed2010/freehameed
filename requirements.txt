@@ -1,0 +1,9 @@
+telebot
+pyrogram
+tgcrypto
+kvsqlite
+pyromod==1.4
+schedule
+pandas
+requests
+json5
