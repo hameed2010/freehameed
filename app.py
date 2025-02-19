@@ -266,7 +266,9 @@ def handle_message(message):
         else:
             bot.reply_to(message, messages['registration_success_message'])
             return
-
+    user_messages[str(today)] = messages_today + 1
+    db.set(f"{user_id}_messages", user_messages)
+    bot.reply_to(message, messages['registration_success_message'])
                 
     
 def download_resource(resource_id, message_id, user_id):
