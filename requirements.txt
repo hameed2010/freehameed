@@ -8,3 +8,4 @@ pandas
 requests
 json5
 gunicorn
+flask
