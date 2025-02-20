@@ -301,6 +301,7 @@ def download_resource(resource_id, message_id, user_id,link):
         file_response = requests.get(file_url, stream=True)
         file_response.raise_for_status()
         
+        
 
         with open(filename, "wb") as file:
             for chunk in file_response.iter_content(1024):
@@ -310,10 +311,9 @@ def download_resource(resource_id, message_id, user_id,link):
 
         with open(filename, "rb") as file:
             
-            bot.send_document(user_id, file,reply_to_message_id=message_id,caption="هذا هو الملف المطلوب")
+            bot.send_document(user_id, file,caption="هذا هو الملف المطلوب")
             
-        with open(filename, "rb") as file:
-            bot.send_document(chat_id="@freepikprem4", document=file, caption=str(link))   
+         
 
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
 
