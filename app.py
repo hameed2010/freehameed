@@ -33,7 +33,7 @@ db = uu('dbs/hameeed.ss', 'rshq')\
 print(db)
 
 
-bot = TeleBot(token="7536129194:AAH7xiyzsadwEKvNXskin3Oo1Yjycq4JNNA")
+bot = TeleBot(token="7326958688:AAG__Ylc-gihaeM7UX4o1gVkXXbRGe4F9Ho")
 MAX_MESSAGES_PER_DAY = 10
 admin = 6698161283 
 bk = mk(row_width=1).add(btn('رجوع', callback_data='back'))
@@ -233,7 +233,7 @@ def handle_message(message):
         
         user_messages = {}
     messages_today = user_messages.get(str(today), 0)
-    if messages_today >= 1:
+    if messages_today >= 10:
         channel_button = btn("اضغط هنا", url=f'https://t.me/freepikprem1')
         keyboard = mk().add(channel_button)
         bot.reply_to(
@@ -307,8 +307,11 @@ def download_resource(resource_id, message_id, user_id,link):
         print(f"✅ تم تحميل الملف: {filename}")
 
         with open(filename, "rb") as file:
-            bot.send_document(user_id, file,reply_to_message_id=message_id)
-            bot.send_document(chat_id="@freepikprem4", document=file, caption=link)
+            
+            bot.send_document(user_id, file,reply_to_message_id=message_id,caption="هذا هو الملف المطلوب")
+            
+        with open(filename, "rb") as file:
+            bot.send_document(chat_id="@freepikprem4", document=file, caption=str(link))   
 
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
 
