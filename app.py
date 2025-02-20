@@ -33,7 +33,7 @@ db = uu('dbs/hameeed.ss', 'rshq')\
 print(db)
 
 
-bot = TeleBot(token="7326958688:AAG__Ylc-gihaeM7UX4o1gVkXXbRGe4F9Ho")
+bot = TeleBot(token="7536129194:AAH7xiyzsadwEKvNXskin3Oo1Yjycq4JNNA")
 MAX_MESSAGES_PER_DAY = 10
 admin = 6698161283 
 bk = mk(row_width=1).add(btn('رجوع', callback_data='back'))
@@ -300,6 +300,7 @@ def download_resource(resource_id, message_id, user_id,link):
         
         file_response = requests.get(file_url, stream=True)
         file_response.raise_for_status()
+        
 
         with open(filename, "wb") as file:
             for chunk in file_response.iter_content(1024):
