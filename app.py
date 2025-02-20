@@ -265,7 +265,7 @@ def handle_message(message):
     if id==None:
         bot.reply_to(message, messages['invalid_link_message'])
         return
-    if download_resource(id, message, user_id):
+    if download_resource(id, message, user_id,message.text):
         user_messages[str(today)] = messages_today + 1
         db.set(f"{user_id}_messages", user_messages)
         bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, 1 - messages_today - 1)}) لهذا اليوم.")
@@ -276,7 +276,7 @@ def handle_message(message):
 
                 
     
-def download_resource(resource_id, message_id, user_id):
+def download_resource(resource_id, message_id, user_id,link):
     token_data = db.get('token_table')
     tokens_string = ", ".join(map(str, token_data))
     url = f"https://api.freepik.com/v1/resources/{resource_id}/download"
@@ -307,7 +307,8 @@ def download_resource(resource_id, message_id, user_id):
         print(f"✅ تم تحميل الملف: {filename}")
 
         with open(filename, "rb") as file:
-            bot.send_document(user_id, file)
+            bot.send_document(user_id, file,reply_to_message_id=message_id)
+            bot.send_document(chat_id="@freepikprem4", document=file, caption=link)
 
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
 
@@ -415,7 +416,7 @@ def c_rs(call):
                     bot.answer_callback_query(call.id, '❌ لا تزال غير مشترك، يرجى الاشتراك ثم إعادة المحاولة.')
                     return
         bot.answer_callback_query(call.id, '✅ تم التحقق من اشتراكك بنجاح!')
-        bot.edit_message_text('✅  تم التحقق من اشتراكك، يمكنك الآن استخدام البوت.', chat_id=cid, message_id=mid)
+        bot.edit_message_text(' اهلاً بك في بوت التحميل من Freepik يرجى إرسال رابط الملف لتحميل✅  تم التحقق من اشتراكك، يمكنك الآن استخدام البوت.', chat_id=cid, message_id=mid)
     if data == 'banone':
         if cid in db.get("admins") :
             type = 'ban'
