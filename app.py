@@ -23,9 +23,11 @@ except:
    
     pass
 
-
 from keep_alive import keep_alive
 keep_alive()
+
+
+
 db = uu('dbs/hameeed.ss', 'rshq')\
 
 print(db)
@@ -232,15 +234,20 @@ def handle_message(message):
         user_messages = {}
     messages_today = user_messages.get(str(today), 0)
     if messages_today >= 1:
+        channel_button = btn("اضغط هنا", url=f'https://t.me/freepikprem1')
+        keyboard = mk().add(channel_button)
         bot.reply_to(
         message,
         f"🚫 نعتذر، لقد تم منعك من الإرسال حتى {formatted_date} الساعة 13:31. "
         "يتطلب الاشتراك لإكمال طلب الملفات الإضافية.\n\n"
         "للاشتراك، يمكنك التحدث مع أحد المشرفين أو الضغط <a href='https://t.me/freepikprem1'>هنا</a>.\n\n"
         "شكرًا لتفهمك!",
-        parse_mode="HTML"
+        parse_mode="HTML",reply_markup=keyboard
     )
+        channel_button = btn("قم بإرسال صورة الإيداع إلى هنا", url=f'https://t.me/eitabbbb')
+        keyboard = mk().add(channel_button)
         message_text = """
+       <blockquote> الدفع عبر مصرف الكريمي  </blockquote>
     👤 باسم: عصماء علي
 
     💳 الحسابات المتاحة:
@@ -251,7 +258,7 @@ def handle_message(message):
     📤 بعد الإيداع:
     قم بإرسال صورة الإيداع إلى ⇇ @eitabbbb
     """
-        bot.reply_to(message, message_text, parse_mode="HTML")
+        bot.reply_to(message, message_text, parse_mode="HTML",reply_markup=keyboard)
         return
     id=extract_freepik_id(message.text)
     print(id)
@@ -377,12 +384,15 @@ def c_rs(call):
             bot.edit_message_text(chat_id=cid, message_id=mid, text='لا يوجد ادمنية بالبوت')
             return
     if data == 'subscription':
-        get_subscription = db.get('subscription')
+        
+        get_subscription = db.get('_subscription')
         if get_subscription:
+            print(get_subscription)
             if len(get_subscription) >=1:
                 txt = 'المشتركين : \n'
                 for ran, admin in enumerate(get_subscription, 1):
                     try:
+                        print(admin)
                         info = bot.get_chat(admin)
                         username = f'{ran} @'+str(info.username)+' | {admin}\n' if info.username else f'{ran} {admin} .\n'
                         txt+=username
@@ -503,6 +513,7 @@ def subscription(message, action):
 
         bot.reply_to(message, f"✅ تم تفعيل الاشتراك للمستخدم **{user_id}** حتى {end_date}")
         try:
+            bot.send_message('@freepikprem3',f"✅ تم تفعيل الاشتراك للمستخدم **{user_id}** حتى {end_date}")
             bot.send_message(user_id, f"🎉 تهانينا! تم تفعيل اشتراكك حتى {end_date}.\n"
                                       f"يمكنك الآن تحميل   10 ملفات  يوميًا. ✅")
         except Exception as e:
@@ -511,7 +522,9 @@ def subscription(message, action):
     elif action == 'delete':
         if db.exists(f"{user_id}_subscription"):
             db.delete(f"{user_id}_subscription")
+            
             bot.reply_to(message, f"❌ تم إلغاء اشتراك المستخدم **{user_id}** بنجاح.")
+            bot.send_message('@freepikprem3',f"❌ تم إلغاء اشتراك المستخدم **{user_id}** بنجاح.")
         else:
             bot.reply_to(message, f"⚠️ لا يوجد اشتراك لهذا المستخدم.")
 
@@ -521,7 +534,7 @@ def subscription(message, action):
             bot.reply_to(message, f"📅 اشتراك المستخدم **{user_id}** نشط حتى {sub_data['end_date']}.")
         else:
             bot.reply_to(message, f"⏳ لا يوجد اشتراك نشط لهذا المستخدم.")
-
+    
 def adminss(message, type):
     admins = db.get('admins')
     if type == 'add':
