@@ -233,7 +233,7 @@ def handle_message(message):
         
         user_messages = {}
     messages_today = user_messages.get(str(today), 0)
-    if messages_today >= 10:
+    if messages_today >= 1:
         channel_button = btn("اضغط هنا", url=f'https://t.me/freepikprem1')
         keyboard = mk().add(channel_button)
         bot.reply_to(
@@ -265,6 +265,7 @@ def handle_message(message):
     if id==None:
         bot.reply_to(message, messages['invalid_link_message'])
         return
+    bot.reply_to(message, "📂 يرجى الانتظار... جارٍ تحميل الملف وإرساله، ")
     if download_resource(id, message, user_id,message.text):
         user_messages[str(today)] = messages_today + 1
         db.set(f"{user_id}_messages", user_messages)
