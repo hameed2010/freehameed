@@ -317,7 +317,7 @@ def download_resource(resource_id, message_id, user_id,link):
 
         with open(filename, "rb") as file:
             
-            bot.send_document(user_id, file,reply_to_message_id=message_id,caption="هذا هو الملف المطلوب")
+            bot.send_document(user_id, file,caption="هذا هو الملف المطلوب")
             
         
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
