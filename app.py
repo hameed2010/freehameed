@@ -283,6 +283,8 @@ def handle_message(message):
             channel_button = btn("قم بإرسال صورة الإيداع إلى هنا", url=f'https://t.me/eitabbbb')
             keyboard = mk().add(channel_button)
             message_text = """
+            <b>احصل على اشتراك في باقة خدمات المصمم</b>
+            <b><blockquote> مقابل 2$ فقط أو 1000﷼ يمني، </blockquote></b>
        <blockquote> الدفع عبر مصرف الكريمي  </blockquote>
     👤 باسم: عصماء علي
 
@@ -293,6 +295,7 @@ def handle_message(message):
 
     📤 بعد الإيداع:
     قم بإرسال صورة الإيداع إلى ⇇ @eitabbbb
+    
     """
             bot.reply_to(message, message_text, parse_mode="HTML",reply_markup=keyboard)
             return
