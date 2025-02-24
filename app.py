@@ -172,6 +172,29 @@ def start_message(message):
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     user_id = message.from_user.id
+    if user_id in db.get('badguys'): return
+    if not db.get(f'user_{user_id}'):
+        do = db.get('force')
+        if do != None:
+            for channel in do:
+                x = bot.get_chat_member(chat_id="@"+channel, user_id=user_id)
+                if str(x.status) in stypes:
+                    pass
+                else:
+                    channel_button = btn(messages['channel_button_text'], url=f'https://t.me/{channel}')
+                    check_button = btn(messages['check_subscription_button_text'], callback_data='check_subscription')
+                    keyboard = mk().add(channel_button).add(check_button)
+                    bot.reply_to(message, messages['subscribe_channel_message'], reply_markup=keyboard)
+                    return
+        data = {'id': user_id, 'users': [], 'coins': 0, 'premium': False}
+        set_user(user_id, data)
+        good = 0
+        users = db.keys('user_%')
+        for ix in users:
+            try:
+                d = db.get(ix[0])['id']
+                good+=1
+            except: continue
     do = db.get('force')
     if do is not None:
         for channel in do:
@@ -200,7 +223,14 @@ def handle_message(message):
 
         # التحقق مما إذا كان الاشتراك لا يزال نشطًا
         if today > end_date:
-            bot.reply_to(message, messages['subscription_expired_message'])
+            message_text = (
+        "⏳ انتهت صلاحية اشتراكك. يرجى التجديد للاستمرار!\n\n"
+        "لتجديد الاشتراك، يمكنك التواصل مع مالك البوت عبر اليوزر التالي: [@eitabbbb]."
+    )
+            channel_button = btn("تواصل مع مالك البوت", url=f'https://t.me/eitabbbb')
+            keyboard = mk().add(channel_button)
+
+            bot.reply_to(message, message_text,reply_markup=keyboard)
             return
 
         # جلب عدد التحميلات اليومية
