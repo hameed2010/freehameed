@@ -291,6 +291,7 @@ def download_resource( message, user_id,midw,chatid):
         print(f"🔗 رابط الملف: {file_url}")
         user_messages[str(today)] = messages_today + 1
         remaining_downloads = max_downloads - (messages_today + 1)
+        db.set(f"{user_id}_messages", user_messages)
         # إرسال الملف إلى المستخدم
         bot.send_document(chatid, file_url, midw,caption=f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
 
@@ -298,7 +299,7 @@ def download_resource( message, user_id,midw,chatid):
 
         # تحديث عدد التنزيلات اليومية
         
-        db.set(f"{user_id}_messages", user_messages)
+        
 
         # حساب التنزيلات المتبقية
         
@@ -309,10 +310,14 @@ def download_resource( message, user_id,midw,chatid):
     except requests.exceptions.RequestException as e:
         print(f"❌ خطأ أثناء التحميل: {e}")
         bot.reply_to(message, "❌ حدث خطأ أثناء تحميل الملف. يرجى المحاولة لاحقًا.")
+        
         return False
     except Exception as e:
         print(f"⚠️ خطأ غير متوقع: {e}")
-        bot.reply_to(message, "⚠️ حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.")
+        mor_button = btn("  📁 تنزيل الملف 📁", url=f'{file_url}')
+        channel_button = btn("📢 قناه الخدمة 📢", url=f'https://t.me/freepikprem1')
+        calladmin = mk().add(mor_button).add(channel_button)
+        bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
         return False
 @bot.callback_query_handler(func=lambda c: True)
 def c_rs(call):
@@ -667,6 +672,6 @@ def casting(message):
     return
 
 try:
-    bot.infinity_polling()
+    bot.infinity_polling(none_stop=True)
 except:
     pass   
