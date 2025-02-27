@@ -31,8 +31,10 @@ keep_alive()
 db = uu('dbs/hameeed.ss', 'rshq')\
 
 print(db)
-
-
+ALLOWED_GROUP_ID = -1002286207232 
+mor_button = btn("📁طلب المزيد 📁", url=f'https://t.me/eitabbbb')
+channel_button = btn("📢 قناه الخدمة 📢", url=f'https://t.me/freepikprem1')
+calladmin = mk().add(mor_button).add(channel_button)
 bot = TeleBot(token="7536129194:AAH7xiyzsadwEKvNXskin3Oo1Yjycq4JNNA")
 MAX_MESSAGES_PER_DAY = 1
 admin = 6698161283 
@@ -173,6 +175,13 @@ def start_message(message):
 def handle_message(message):
     user_id = message.from_user.id
     if user_id in db.get('badguys'): return
+    
+    chat_id = message.chat.id
+    if chat_id != ALLOWED_GROUP_ID and chat_id != user_id:
+        bot.reply_to(message, "عذرًا، أنا أعمل فقط في مجموعة @freepikprem1  معينة أو في البوت نفسه.")
+        return
+        bot.reply_to(message, "عذرًا، أنا أعمل فقط في مجموعة معينة.")
+        return
     if not db.get(f'user_{user_id}'):
         do = db.get('force')
         if do != None:
@@ -209,6 +218,15 @@ def handle_message(message):
                 return
 
     # جلب بيانات الاشتراك من القائمة
+    download_resource( message,user_id,message.message_id,message.chat.id)
+def download_resource( message, user_id,midw,chatid):
+    # جلب بيانات المستخدم
+    user_messages = db.get(f"{user_id}_messages") or {}
+    today = datetime.date.today()
+    messages_today = user_messages.get(str(today), 0)
+    print(user_id)
+    
+    # جلب بيانات الاشتراك للمستخدم
     subscriptions = db.get('subscriptions') or []
     sub_data = None
     for sub in subscriptions:
@@ -216,117 +234,50 @@ def handle_message(message):
             sub_data = sub
             break
 
+    # تحديد الحد الأقصى للتنزيلات اليومية بناءً على حالة الاشتراك
     if sub_data:
-        # تحويل تاريخ انتهاء الاشتراك إلى كائن `datetime.date`
-        end_date = datetime.datetime.strptime(sub_data["end_date"], "%Y-%m-%d").date()
-        today = datetime.date.today()
-
-        # التحقق مما إذا كان الاشتراك لا يزال نشطًا
-        if today > end_date:
-            message_text = (
-        "⏳ انتهت صلاحية اشتراكك. يرجى التجديد للاستمرار!\n\n"
-        "لتجديد الاشتراك، يمكنك التواصل مع مالك البوت عبر اليوزر التالي: [@eitabbbb]."
-    )
-            channel_button = btn("تواصل مع مالك البوت", url=f'https://t.me/eitabbbb')
-            keyboard = mk().add(channel_button)
-
-            bot.reply_to(message, message_text,reply_markup=keyboard)
-            return
-
-        # جلب عدد التحميلات اليومية
-        user_messages = db.get(f"{user_id}_messages") or {}
-        messages_today = user_messages.get(str(today), 0)
-
-        # التحقق من الحد اليومي
         max_downloads = sub_data.get("max_downloads_per_day", MAX_MESSAGES_PER_DAY)
-        if messages_today >= max_downloads:
-            bot.reply_to(message, f"🚫 لقد بلغت الحد الأقصى لعدد التحميلات اليومية ({max_downloads}).\n"
-                                  f"حاول مرة أخرى غدًا.")
-            return
-
-        # استخراج ID المورد من الرابط
-        resource_id = extract_freepik_id(message.text)
-        if resource_id is None:
-            bot.reply_to(message, messages['invalid_link_message'])
-            return
-
-        # تنزيل المورد
-        bot.reply_to(message, "📂 يرجى الانتظار... جارٍ تحميل الملف وإرساله.")
-        if download_resource(resource_id, message, user_id,message.text):
-            user_messages[str(today)] = messages_today + 1
-            db.set(f"{user_id}_messages", user_messages)
-            remaining_downloads = max_downloads - messages_today - 1
-            bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.")
-            return
-        else:
-            bot.reply_to(message, messages['registration_success_message'])
-            return
     else:
-        # بدون اشتراك
-        user_messages = db.get(f"{user_id}_messages") or {}
-        today = datetime.date.today()
-        messages_today = user_messages.get(str(today), 0)
+        max_downloads = MAX_MESSAGES_PER_DAY  # غير مشترك: حد يومي واحد فقط
 
-        # التحقق من الحد اليومي للمستخدمين العاديين
-        if messages_today >= MAX_MESSAGES_PER_DAY:
-            tomorrow = today + datetime.timedelta(days=1)
-            formatted_date = tomorrow.strftime("%d/%m/%Y")
-            channel_button = btn("اشترك هنا", url=f'https://t.me/freepikprem1')
-            keyboard = mk().add(channel_button)
-            bot.reply_to(
-                message,
-                f"🚫 نعتذر، لقد بلغت الحد الأقصى لعدد التحميلات اليومية ({MAX_MESSAGES_PER_DAY}).\n"
-                f"سيتم إعادة ضبط التحميلات في {formatted_date} الساعة 13:31.\n\n"
-                "للاشتراك والحصول على المزيد من التحميلات، يمكنك الضغط هنا.",
-                parse_mode="HTML", reply_markup=keyboard
-            )
-            channel_button = btn("قم بإرسال صورة الإيداع إلى هنا", url=f'https://t.me/eitabbbb')
-            keyboard = mk().add(channel_button)
-            message_text = """
-            <b>احصل على اشتراك في باقة خدمات المصمم</b>
-            <b><blockquote> مقابل 2$ فقط أو 1000﷼ يمني، </blockquote></b>
-       <blockquote> الدفع عبر مصرف الكريمي  </blockquote>
-    👤 باسم: عصماء علي
+    # التحقق مما إذا كان المستخدم قد بلغ الحد الأقصى للتنزيلات اليومية
+    if messages_today >= max_downloads:
+        user_name = message.from_user.first_name or "عزيزي المستخدم"
+        message_text = f"""
+<b>مرحبا {user_name}</b>
+لقد بلغت الحد الأقصى لعدد التحميلات اليومية 
+<b><blockquote>نأسف، لقد تم منعك من الإرسال.</blockquote></b>
 
-    💳 الحسابات المتاحة:
-    - حساب يمني: <b><code>3066613975</code></b>
-    - حساب سعودي: <b><code>3073514826</code></b>
-    - حساب دولار: <b><code>3120895458</code></b>
+<b>لإتمام طلب المزيد من الملفات، يتطلب الأمر الاشتراك:</b>
+- تحدث مع أحد المشرفين.
+- <a href="https://t.me/eitabbbb">اضغط هنا للإشتراك</a>.
 
-    📤 بعد الإيداع:
-    قم بإرسال صورة الإيداع إلى ⇇ @eitabbbb
+شكرًا على تفهمك!
+"حاول مرة أخرى غدًا.
+"""
+        bot.reply_to(message,message_text, parse_mode="HTML" ,reply_markup=calladmin)
+        return False
+
+    # استخراج ID المورد من الرابط
     
-    """
-            bot.reply_to(message, message_text, parse_mode="HTML",reply_markup=keyboard)
-            return
+    resource_id = extract_freepik_id(message.text)
+    if resource_id is None:
+        bot.reply_to(message, messages['invalid_link_message'])
+        return False
+    
+    # بدء عملية التنزيل
+    
 
-        # استخراج ID المورد من الرابط
-        resource_id = extract_freepik_id(message.text)
-        if resource_id is None:
-            bot.reply_to(message, messages['invalid_link_message'])
-            return
-
-        # تنزيل المورد
-        bot.reply_to(message, "📂 يرجى الانتظار... جارٍ تحميل الملف وإرساله.")
-        if download_resource(resource_id, message, user_id,message.text):
-            user_messages[str(today)] = messages_today + 1
-            db.set(f"{user_id}_messages", user_messages)
-            remaining_downloads = MAX_MESSAGES_PER_DAY - messages_today - 1
-            bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.")
-            return
-        else:
-            bot.reply_to(message, messages['registration_success_message'])
-            return  
-def download_resource(resource_id, message_id, user_id,link):
+    # تنزيل المورد باستخدام API
     token_data = db.get('token_table')
     tokens_string = ", ".join(map(str, token_data))
     url = f"https://api.freepik.com/v1/resources/{resource_id}/download"
     headers = {"x-freepik-api-key": tokens_string}
-    
+
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        
+
         data_dict = json.loads(response.text)
         info = data_dict.get('data', {})
         filename = info.get('filename')
@@ -334,35 +285,34 @@ def download_resource(resource_id, message_id, user_id,link):
 
         if not filename or not file_url:
             print("❌ فشل في جلب بيانات الملف.")
+            bot.reply_to(message, "❌ حدث خطأ أثناء تحميل الملف. يرجى المحاولة لاحقًا.")
             return False
 
         print(f"🔗 رابط الملف: {file_url}")
-        
-        file_response = requests.get(file_url, stream=True)
-        file_response.raise_for_status()
-        
+        user_messages[str(today)] = messages_today + 1
+        remaining_downloads = max_downloads - (messages_today + 1)
+        # إرسال الملف إلى المستخدم
+        bot.send_document(chatid, file_url, midw,caption=f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
 
-        with open(filename, "wb") as file:
-            for chunk in file_response.iter_content(1024):
-                file.write(chunk)
-
-        print(f"✅ تم تحميل الملف: {filename}")
-
-        with open(filename, "rb") as file:
-            
-            bot.send_document(user_id, file,caption="هذا هو الملف المطلوب")
-            
-        
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
 
-        os.remove(filename)
+        # تحديث عدد التنزيلات اليومية
+        
+        db.set(f"{user_id}_messages", user_messages)
+
+        # حساب التنزيلات المتبقية
+        
+       
+
         return True
 
     except requests.exceptions.RequestException as e:
         print(f"❌ خطأ أثناء التحميل: {e}")
+        bot.reply_to(message, "❌ حدث خطأ أثناء تحميل الملف. يرجى المحاولة لاحقًا.")
         return False
     except Exception as e:
         print(f"⚠️ خطأ غير متوقع: {e}")
+        bot.reply_to(message, "⚠️ حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.")
         return False
 @bot.callback_query_handler(func=lambda c: True)
 def c_rs(call):
