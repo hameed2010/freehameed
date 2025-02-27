@@ -672,6 +672,6 @@ def casting(message):
     return
 
 try:
-    bot.infinity_polling(none_stop=True)
+    bot.infinity_polling()
 except:
     pass   
