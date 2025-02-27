@@ -314,10 +314,10 @@ def download_resource( message, user_id,midw,chatid):
         return False
     except Exception as e:
         print(f"⚠️ خطأ غير متوقع: {e}")
-        mor_button = btn("  📁 تنزيل الملف 📁", url=f'{file_url}')
-        channel_button = btn("📢 قناه الخدمة 📢", url=f'https://t.me/freepikprem1')
-        calladmin = mk().add(mor_button).add(channel_button)
-        bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
+        mor_button2 = btn("  📁 تنزيل الملف 📁", url=f'{file_url}')
+        channel_button2 = btn("📢 قناه الخدمة 📢", url=f'https://t.me/freepikprem1')
+        calladmin2 = mk().add(mor_button2).add(channel_button2)
+        bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin2)
         db.set(f"{user_id}_messages", user_messages)
         return False
 @bot.callback_query_handler(func=lambda c: True)
