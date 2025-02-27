@@ -291,12 +291,12 @@ def download_resource( message, user_id,midw,chatid):
         print(f"🔗 رابط الملف: {file_url}")
         user_messages[str(today)] = messages_today + 1
         remaining_downloads = max_downloads - (messages_today + 1)
-        db.set(f"{user_id}_messages", user_messages)
+        
         # إرسال الملف إلى المستخدم
         bot.send_document(chatid, file_url, midw,caption=f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
 
         print(f"📤 تم إرسال الملف إلى المستخدم {user_id}")
-
+        db.set(f"{user_id}_messages", user_messages)
         # تحديث عدد التنزيلات اليومية
         
         
@@ -318,6 +318,7 @@ def download_resource( message, user_id,midw,chatid):
         channel_button = btn("📢 قناه الخدمة 📢", url=f'https://t.me/freepikprem1')
         calladmin = mk().add(mor_button).add(channel_button)
         bot.reply_to(message, f"📂 ملفك أصبح جاهز ✅ المتبقي لديك لتحميل ({max(0, remaining_downloads)}) لهذا اليوم.",reply_markup=calladmin)
+        db.set(f"{user_id}_messages", user_messages)
         return False
 @bot.callback_query_handler(func=lambda c: True)
 def c_rs(call):
